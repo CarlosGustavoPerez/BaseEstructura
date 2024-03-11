@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.15.2",
+    "libraryName": "abm-tipo-documentos",
+    "libraryId": "379887e3-737c-4161-aa3f-745880727d37",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "abm-tipo-documentos",
+    "solutionShortDescription": "abm-tipo-documentos description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

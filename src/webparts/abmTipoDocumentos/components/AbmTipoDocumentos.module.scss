@@ -1,0 +1,102 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+:root{
+  --grisFondo: #dfddd8;
+  --azulNacion:#03787c;
+}
+.abmTipoDocumentos {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+section{
+  width: 800px;
+  margin: 0 auto;
+  background-color: #dfddd8;
+}
+.headerGrilla {
+  background-image: url('./img/bgFormularioABM.png');
+  background-size: cover;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Añade esta línea */
+}
+.header{
+  background-image: url('./img/BannerEquivalenza.png');
+  background-size: cover;
+  height: 147px;
+  padding: 1em;
+}
+.separator {
+  height: 5px;
+  width: 100%;
+  background-color: black; /* Color azul */
+}
+.divForm{
+  background-color: var(--grisFondo);
+  padding: 1em;
+}
+.combos{
+  width: 100%;
+}
+.combos>div>span{
+  padding-top: 0px;
+}
+.accordion{
+  background: var(--grisFondo)  !important;
+  background-color: var(--grisFondo)  !important;
+  padding: 10px 0;
+  width:100%;
+}
+.accordion>button
+{
+  background-color: var(--azulNacion) !important;
+  color: #ffffff !important;
+}
+.accordion>div
+{
+  padding: 0 12px 12px !important;
+}
+.customStack {
+  width: 250px;
+}
+.customStackAprob {
+  width: 200px;
+}
+.botonNuevo{
+  background-color: black;
+  border-color: black;
+  color: white;
+  padding: 8px 16px; /* Ajusta el relleno del botón según sea necesario */
+  border-radius: 3px; 
+}
+.peoplePickerdBackgroundColor {
+  background-color: #ffffff !important; /* Cambia #f2f2f2 por el color que desees */
+}
+.tituloGrilla{
+  font-family: Moneta, serif;
+  color: #3D5B58;
+  font-weight: 400;
+  font-size: 40px;
+}
+.botonContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0; /* Ajusta según tu diseño */
+}
+
+.btn {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 2px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "abm-tipo-documentos-client-side-solution",
+    "id": "379887e3-737c-4161-aa3f-745880727d37",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.15.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "abm-tipo-documentos description"
+      },
+      "longDescription": {
+        "default": "abm-tipo-documentos description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "abm-tipo-documentos Feature",
+        "description": "The feature that activates elements of the abm-tipo-documentos solution.",
+        "id": "f657028d-9359-4015-a209-a8981cb55acc",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/abm-tipo-documentos.sppkg"
+  }
+}
