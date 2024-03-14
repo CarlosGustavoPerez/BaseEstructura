@@ -115,10 +115,14 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
     ];
     const addIcon: IIconProps = { iconName: 'Add' };
     return (
+        <section className={styles.section}>
         <div>
             <div className={styles.headerGrilla}>
                 <Text className={styles.tituloGrilla}>TIPOS DE DOCUMENTOS</Text>
-                <div className={styles.botonContainer}>
+                
+            </div>
+            <div className={styles.separator}></div>
+            <div>
                     <DefaultButton
                         iconProps={addIcon} 
                         onClick={() => abrirFormulario(0)} 
@@ -126,8 +130,6 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
                         className={styles.botonNuevo}
                     />
                 </div>
-            </div>
-
             <FocusZone direction={FocusZoneDirection.vertical}>
                 
                 <ListView
@@ -155,7 +157,8 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
                     </PanelFormulario>
                 </Panel>
             </FocusZone>
-        </div>
+        //</div>
+        </section>
     );
 }
 export default GrillaAbmTipoDocumentos;

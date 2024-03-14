@@ -297,7 +297,7 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
 
   const CargarDatos = async (sId) => {
     await sp.web.lists.getByTitle("ABMTipoDeDocumentos").items.
-    filter('Id eq '+ sId.toString()).select("Id, Created,TipoDeDocumento,TipoDeNotificacion, Author/FirstName, Author/LastName, Author/EMail,Prefijo,CantidadDeAprobacion,VersionInicial, AprobadorTitularNivel1/EMail,AprobadorTitularNivel1/Id,AprobadorSuplenteNivel1/EMail,AprobadorSuplenteNivel1/Id, AprobadorTitularNivel2/Id, AprobadorSuplenteNivel2/EMail, AprobadorSuplenteNivel2/Id, AprobadorTitularNivel3/EMail, AprobadorTitularNivel3/Id, AprobadorSuplenteNivel3/EMail, AprobadorSuplenteNivel3/Id")
+    filter('Id eq '+ sId.toString()).select("Id, Created,TipoDeDocumento,TipoDeNotificacion, Author/FirstName, Author/LastName, Author/EMail,Prefijo,CantidadDeAprobacion,VersionInicial, AprobadorTitularNivel1/EMail,AprobadorTitularNivel1/Id,AprobadorSuplenteNivel1/EMail,AprobadorSuplenteNivel1/Id, AprobadorTitularNivel2/Id, AprobadorTitularNivel2/EMail, AprobadorSuplenteNivel2/EMail, AprobadorSuplenteNivel2/Id, AprobadorTitularNivel3/EMail, AprobadorTitularNivel3/Id, AprobadorSuplenteNivel3/EMail, AprobadorSuplenteNivel3/Id")
     .expand("Author,AprobadorTitularNivel1,AprobadorSuplenteNivel1,AprobadorTitularNivel2,AprobadorSuplenteNivel2,AprobadorTitularNivel3,AprobadorSuplenteNivel3")
     .getAll().then((items)=>{  items.map((item)=>{
       setPrefijo(item.Prefijo);

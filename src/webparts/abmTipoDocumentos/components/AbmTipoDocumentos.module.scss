@@ -12,10 +12,9 @@
     font-family: $ms-font-family-fallbacks;
   }
 }
-section{
-  width: 800px;
+.section{
+  width: 1000px;
   margin: 0 auto;
-  background-color: #dfddd8;
 }
 .headerGrilla {
   background-image: url('./img/bgFormularioABM.png');
@@ -74,6 +73,7 @@ section{
   color: white;
   padding: 8px 16px; /* Ajusta el relleno del botón según sea necesario */
   border-radius: 3px; 
+  margin: 5px 0;
 }
 .peoplePickerdBackgroundColor {
   background-color: #ffffff !important; /* Cambia #f2f2f2 por el color que desees */
