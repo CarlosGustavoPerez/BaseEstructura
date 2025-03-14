@@ -10,8 +10,8 @@ import { Panel,PanelType,
     IIconProps,
     Persona, PersonaSize,
     Text,
-    Icon,
-    ITextFieldStyleProps, ITextFieldStyles, ILabelStyles, ILabelStyleProps } from '@fluentui/react';
+     } from '@fluentui/react';
+    import { NeutralColors  } from '@fluentui/theme';
 import PanelFormulario from './FormAbmTipoDocumentos';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 import { LivePersona } from "@pnp/spfx-controls-react/lib/LivePersona";
@@ -40,7 +40,7 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
     }, []);
     const CargarTipoDoc = async () => {
         await sp.web.lists.getByTitle('ABMTipoDeDocumentos')
-        .items.select("Id, Created,TipoDeDocumento,Author/FirstName,Author/LastName,Author/EMail")
+        .items.select("Id, Created,TipoDeDocumento,Author/FirstName,Author/LastName,Author/EMail,Estado")
         .expand('Author')
         .getAll()
         .then((items) => {
@@ -101,6 +101,28 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
             }
         },
         {
+            name: "Estado",
+            displayName: "Estado",
+            isResizable: false,
+            sorting: true,
+            minWidth: 0,
+            maxWidth: 80,
+            render: (item: any) => {
+                if( (item.Estado== "ACTIVO"))
+                {
+                    return <div  style={{  color:NeutralColors.black,display:"flex",justifyContent:"center"  }}> {item.Estado}</div> ;
+                }
+                else if( (item.Estado== "NO ACTIVO"))
+                {
+                    return <div  style={{  color:NeutralColors.gray80,display:"flex",justifyContent:"center"  }}> {item.Estado}</div> ;
+                }
+                else
+                {
+                    return <div  style={{  color:NeutralColors.black,display:"flex",justifyContent:"center"  }}> {item.Estado}</div> ;  
+                }
+            },
+        },
+        {
             name: "Id",
             displayName: "Ver",
             // linkPropertyName: "c",    
@@ -109,9 +131,10 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
             minWidth: 0,
             maxWidth: 50,
             render: (item: any) => {
-            return <IconButton iconProps={ActivateOrders} onClick={() => { abrirFormulario(item.Id) }} title="Ver Más" ariaLabel="Ver Más" />;
+            return <IconButton iconProps={ActivateOrders} onClick={() => { abrirFormulario(item.Id); }} title="Ver Más" ariaLabel="Ver Más" />;
             }
         },
+        
     ];
     const addIcon: IIconProps = { iconName: 'Add' };
     return (
@@ -157,8 +180,8 @@ const GrillaAbmTipoDocumentos: React.FC<IAbmTipoDocumentosProps> = (props: IAbmT
                     </PanelFormulario>
                 </Panel>
             </FocusZone>
-        //</div>
+            </div>
         </section>
     );
-}
+};
 export default GrillaAbmTipoDocumentos;

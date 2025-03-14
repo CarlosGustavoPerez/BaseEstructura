@@ -10,6 +10,7 @@ import {
     ITextFieldStyleProps, ITextFieldStyles,
     Icon,
     MessageBar, MessageBarType,
+    Toggle
   } from '@fluentui/react';
 import { sp } from "@pnp/sp/presets/all";
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
@@ -28,6 +29,8 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
   const [ddCantidadAprob, setDdCantidadAprob] = useState<IDropdownOption>();
   const [prefijo, setPrefijo] = useState("");
   const [versionInicial, setVersionInicial] = useState("");
+  const [biblioteca, setBiblioteca] = useState("");
+  const [nombreDocumento, setNombreDocumento] = useState("");
   const [aprobadorTitular1, setAprobadorTitular1] = useState([]);
   const [aprobadorTitular2, setAprobadorTitular2] = useState([]);
   const [aprobadorTitular3, setAprobadorTitular3] = useState([]);
@@ -43,6 +46,7 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
   const [mostrarMessageBar, setMostrarMessageBar] = useState(false);
   const [showStacks, setShowStacks] = useState([false, false, false]);
   const [mensajeError, setMensajeError] = useState('');
+  const [estadoActivo, setEstadoActivo] = useState(true);
 
   const _AprobadorTitular1Changed = (items: any[]) => {
     let userarr: string[] = [];
@@ -87,21 +91,9 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
     });
     setAprobadorSuplente3Id(userarr);
   };
-  const existeTipoDocumento = async (tipoDoc) => {
-    const listaTipoDocumentos = sp.web.lists.getByTitle("ABMTipoDeDocumentos");
-    const items = await listaTipoDocumentos.items.filter(`TipoDeDocumento eq '${tipoDoc}'`).get();
-    return items.length > 0;
-  };
-
+  
   const cambiaTipoDoc = async (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): Promise<void> => {
-    const existeRegistro = await existeTipoDocumento(item.text);
-  if (existeRegistro) {
-    // Mostrar un mensaje de error o realizar alguna acción adicional
-    setMostrarMessageBar(true);
-  } else {
     setDdTipoDoc(item);
-    setMostrarMessageBar(false);
-  }
   };
   const cambiaTipoNotificacion = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
     setDdTipoNotificacion(item);
@@ -125,13 +117,9 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
     }
   };
   const TipoDoc = [ 
-    { key: 'Procedimiento', text: 'Procedimiento', iconProps: { iconName: 'Document' } },
-    { key: 'InstTrab', text: 'Instrucción de trabajo', iconProps: { iconName: 'TaskLogo' } }, 
-    { key: 'Protocolo', text: 'Protocolo', iconProps: { iconName: 'CheckList' } }, 
-    { key: 'PlanCtrl', text: 'Plan de control', iconProps: { iconName: 'Shield' } }, 
-    { key: 'Informe', text: 'Informe', iconProps: { iconName: 'BarChartHorizontal' } }, 
-    { key: 'Registro', text: 'Registro', iconProps: { iconName: 'List' } }, 
-    { key: 'Dossier', text: 'Dossier de producto', iconProps: { iconName: 'Folder' } }, 
+    { key: 'A', text: 'A' },
+    { key: 'B', text: 'B' },
+    { key: 'C', text: 'C' },
   ];
   const renderOption = (option) => {
     return (
@@ -168,7 +156,6 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
     { 
       key: '1',
       text: '1',
-      
     },
     {
      key: '2',
@@ -177,14 +164,44 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
    {
     key: '3',
     text: '3',
-    
   } 
+  ];
+  const EstadoOpciones = [
+    { 
+      key: 'ACTIVO',
+      text: 'ACTIVO',
+    },
+    {
+     key: 'NO ACTIVO',
+     text: 'NO ACTIVO',
+   }
   ];
   const _PrefijoCambia = (changedvalue) => {
     setPrefijo(changedvalue.target.value);
   };
+  const _BibliotecaCambia = (changedvalue) => {
+    setBiblioteca(changedvalue.target.value);
+  };
+  
   const _VersionInicialCambia = (changedvalue) => {
     setVersionInicial(changedvalue.target.value);
+  };
+  const _NombreDocumentoCambia = (event) => {
+    setNombreDocumento(event.target.value);
+    setMostrarMessageBar(false); // Ocultar el mensaje al cambiar el valor
+  };
+  const _validarNombreDocumento = async () => {
+    if (nombreDocumento.trim() === "") return;
+
+    const existe = await existeTipoDocumento(nombreDocumento);
+    setMostrarMessageBar(existe);
+  };
+  const existeTipoDocumento = async (tipoDoc) => {
+    const listaTipoDocumentos = sp.web.lists.getByTitle("ABMTipoDeDocumentos");
+    const items = await listaTipoDocumentos.items
+      .filter(`TipoDeDocumento eq '${tipoDoc}'`)
+      .get();
+    return items.length > 0;
   };
   const stylesSeparador = {
     root: [{
@@ -197,8 +214,8 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
   };
   const validarCampos = () => {
     const camposFaltantes = [];
-    if (!ddTipoDoc || !ddTipoDoc.key) {
-      camposFaltantes.push('Tipo de documentos, ');
+    if (!nombreDocumento) {
+      camposFaltantes.push('Nombre de documento,');
     }
     if (!ddTipoNotificacion || !ddTipoNotificacion.key) {
       camposFaltantes.push('Tipo de notificación, ');
@@ -236,16 +253,19 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
         default:
       }
     }
-    
-    
-    
+    const cantidadAprobaciones = parseInt(ddCantidadAprob?.key.toString(), 10);
+    if (ddTipoDoc && (ddTipoDoc.key === 'B') && (isNaN(cantidadAprobaciones) || cantidadAprobaciones > 2)) {
+      camposFaltantes.push('Cantidad de aprobaciones debe ser menor o igual a 2, ');
+    }
     if (!prefijo) {
       camposFaltantes.push('Prefijo, ');
     }
     if (!versionInicial) {
-      camposFaltantes.push('Versión inicial.');
+      camposFaltantes.push('Versión inicial,');
     }
-    
+    if (!ddTipoDoc || !ddTipoDoc.key) {
+      camposFaltantes.push('Tipo. ');
+    }
     if (camposFaltantes.length > 0) {
       const mensajeError = `Por favor complete los siguientes campos:\n${camposFaltantes.join('\n')}`;
       setMensajeError(mensajeError);
@@ -261,7 +281,7 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
     const list = sp.web.lists.getByTitle('ABMTipoDeDocumentos');
     const itemData = {
       Title: 'Tipo de documento',
-      TipoDeDocumento: ddTipoDoc == null ? '' : ddTipoDoc.text,
+      TipoDeDocumento: nombreDocumento,
       TipoDeNotificacion: ddTipoNotificacion == null ? '' : ddTipoNotificacion.key,
       CantidadDeAprobacion: ddCantidadAprob == null ? '' : ddCantidadAprob.key,
       AprobadorTitularNivel1Id: aprobadorTitular1Id[0],
@@ -271,7 +291,10 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
       AprobadorTitularNivel3Id: aprobadorTitular3Id[0],
       AprobadorSuplenteNivel3Id: aprobadorSuplente3Id[0],
       VersionInicial: versionInicial,
-      Prefijo: prefijo
+      BibliotecaDocumentoPublicado: biblioteca,
+      Prefijo: prefijo,
+      TipoDoc: ddTipoDoc == null ? '' : ddTipoDoc.text,
+      Estado: estadoActivo ? 'ACTIVO' : 'NO ACTIVO',
     };
     
     if(props.id == '0')
@@ -283,7 +306,10 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
       }
       props.recargarGrilla();
   };
-
+  const _onChangeEstado = (ev, checked) => {
+    setEstadoActivo(checked);
+  };
+  
   useEffect(() => {
     if(props.id == "0")
     {
@@ -297,71 +323,66 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
 
   const CargarDatos = async (sId) => {
     await sp.web.lists.getByTitle("ABMTipoDeDocumentos").items.
-    filter('Id eq '+ sId.toString()).select("Id, Created,TipoDeDocumento,TipoDeNotificacion, Author/FirstName, Author/LastName, Author/EMail,Prefijo,CantidadDeAprobacion,VersionInicial, AprobadorTitularNivel1/EMail,AprobadorTitularNivel1/Id,AprobadorSuplenteNivel1/EMail,AprobadorSuplenteNivel1/Id, AprobadorTitularNivel2/Id, AprobadorTitularNivel2/EMail, AprobadorSuplenteNivel2/EMail, AprobadorSuplenteNivel2/Id, AprobadorTitularNivel3/EMail, AprobadorTitularNivel3/Id, AprobadorSuplenteNivel3/EMail, AprobadorSuplenteNivel3/Id")
+    filter('Id eq '+ sId.toString()).select("Id, Created,TipoDeDocumento,TipoDeNotificacion, Author/FirstName, Author/LastName, Author/EMail,Prefijo,CantidadDeAprobacion,VersionInicial, AprobadorTitularNivel1/EMail,AprobadorTitularNivel1/Id,AprobadorSuplenteNivel1/EMail,AprobadorSuplenteNivel1/Id, AprobadorTitularNivel2/Id, AprobadorTitularNivel2/EMail, AprobadorSuplenteNivel2/EMail, AprobadorSuplenteNivel2/Id, AprobadorTitularNivel3/EMail, AprobadorTitularNivel3/Id, AprobadorSuplenteNivel3/EMail, AprobadorSuplenteNivel3/Id, TipoDoc, BibliotecaDocumentoPublicado,Estado")
     .expand("Author,AprobadorTitularNivel1,AprobadorSuplenteNivel1,AprobadorTitularNivel2,AprobadorSuplenteNivel2,AprobadorTitularNivel3,AprobadorSuplenteNivel3")
-    .getAll().then((items)=>{  items.map((item)=>{
-      setPrefijo(item.Prefijo);
-      setVersionInicial(item.VersionInicial);
-      const tipoDocumento = item.TipoDeDocumento; // Valor a buscar
-      let tipoEncontrado = null;
-      for (let i = 0; i < TipoDoc.length; i++) {
-          if (TipoDoc[i].text === tipoDocumento) {
-              tipoEncontrado = TipoDoc[i];
-              break;
-          }
-      }
-      if (tipoEncontrado) {
+    .getAll().then((items)=>{  
+      items.map((item)=>{
+        setPrefijo(item.Prefijo);
+        setVersionInicial(item.VersionInicial);
+        setNombreDocumento(item.TipoDeDocumento);
+        setBiblioteca(item.BibliotecaDocumentoPublicado);
         setDdTipoDoc({
-            key: tipoEncontrado.key,
-            text: tipoEncontrado.text,
+            key: item.TipoDoc,
+            text: item.TipoDoc,
         });
-      }
-      setDdTipoNotificacion({
-        key: item.TipoDeNotificacion,
-        text: item.TipoDeNotificacion,
+        setDdTipoNotificacion({
+          key: item.TipoDeNotificacion,
+          text: item.TipoDeNotificacion,
+        });
+        setDdCantidadAprob({
+          key: item.CantidadDeAprobacion,
+          text: item.CantidadDeAprobacion,
+        });
+        setEstadoActivo(item.Estado === 'ACTIVO');
+        switch (item.CantidadDeAprobacion) {
+          case "1":
+            setShowStacks([true, false, false]);
+            setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
+            setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
+            setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
+            setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
+            break;
+          case "2":
+            setShowStacks([true, true, false]);
+            setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
+            setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
+            setAprobadorTitular2([item.AprobadorTitularNivel2.EMail]);
+            setAprobadorSuplente2([item.AprobadorSuplenteNivel2.EMail]);
+            setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
+            setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
+            setAprobadorTitular2Id([item.AprobadorTitularNivel2.Id]);
+            setAprobadorSuplente2Id([item.AprobadorSuplenteNivel2.Id]);
+            break;
+          case "3":
+            setShowStacks([true, true, true]);
+            setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
+            setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
+            setAprobadorTitular2([item.AprobadorTitularNivel2.EMail]);
+            setAprobadorSuplente2([item.AprobadorSuplenteNivel2.EMail]);
+            setAprobadorTitular3([item.AprobadorTitularNivel3.EMail]);
+            setAprobadorSuplente3([item.AprobadorSuplenteNivel3.EMail]);
+            setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
+            setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
+            setAprobadorTitular2Id([item.AprobadorTitularNivel2.Id]);
+            setAprobadorSuplente2Id([item.AprobadorSuplenteNivel2.Id]);
+            setAprobadorTitular3Id([item.AprobadorTitularNivel3.Id]);
+            setAprobadorSuplente3Id([item.AprobadorSuplenteNivel3.Id]);
+            break;
+          default:
+            setShowStacks([false, false, false]);
+        }
       });
-      setDdCantidadAprob({
-        key: item.CantidadDeAprobacion,
-        text: item.CantidadDeAprobacion,
-      });
-      switch (item.CantidadDeAprobacion) {
-        case "1":
-          setShowStacks([true, false, false]);
-          setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
-          setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
-          setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
-          setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
-          break;
-        case "2":
-          setShowStacks([true, true, false]);
-          setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
-          setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
-          setAprobadorTitular2([item.AprobadorTitularNivel2.EMail]);
-          setAprobadorSuplente2([item.AprobadorSuplenteNivel2.EMail]);
-          setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
-          setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
-          setAprobadorTitular2Id([item.AprobadorTitularNivel2.Id]);
-          setAprobadorSuplente2Id([item.AprobadorSuplenteNivel2.Id]);
-          break;
-        case "3":
-          setShowStacks([true, true, true]);
-          setAprobadorTitular1([item.AprobadorTitularNivel1.EMail]);
-          setAprobadorSuplente1([item.AprobadorSuplenteNivel1.EMail]);
-          setAprobadorTitular2([item.AprobadorTitularNivel2.EMail]);
-          setAprobadorSuplente2([item.AprobadorSuplenteNivel2.EMail]);
-          setAprobadorTitular3([item.AprobadorTitularNivel3.EMail]);
-          setAprobadorSuplente3([item.AprobadorSuplenteNivel3.EMail]);
-          setAprobadorTitular1Id([item.AprobadorTitularNivel1.Id]);
-          setAprobadorSuplente1Id([item.AprobadorSuplenteNivel1.Id]);
-          setAprobadorTitular2Id([item.AprobadorTitularNivel2.Id]);
-          setAprobadorSuplente2Id([item.AprobadorSuplenteNivel2.Id]);
-          setAprobadorTitular3Id([item.AprobadorTitularNivel3.Id]);
-          setAprobadorSuplente3Id([item.AprobadorSuplenteNivel3.Id]);
-          break;
-        default:
-          setShowStacks([false, false, false]);
-      }
-    })});
+    });
   };
     return (
         <section>
@@ -371,18 +392,16 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
               <Stack>
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 10 }}>
                   <Stack verticalAlign="start" className={styles.customStack}>
-                    <Label>Tipo de documento: </Label>
-                    <Dropdown
-                      placeholder="Seleccione..."
-                      options={TipoDoc}
-                      onRenderOption={renderOption}  
-                      selectedKey={ddTipoDoc ? ddTipoDoc.key : undefined}
-                      onChange={cambiaTipoDoc}
-                      className={styles.combos}
-                      styles={{ dropdown: { width: '100%' } }}
+                  <Label>Nombre de documento: </Label>
+                    <TextField
+                      placeholder='Nombre de Documento'
+                      value={nombreDocumento}
+                      onChange={_NombreDocumentoCambia}
+                      styles={getStyles}
+                      onBlur={_validarNombreDocumento}
                     />
-                    </Stack>
-                    <Stack verticalAlign="start" className={styles.customStack}>
+                  </Stack>
+                  <Stack verticalAlign="start" className={styles.customStack}>
                     <Label>Tipo de notificación: </Label>
                     <Dropdown
                       placeholder="Seleccione..."
@@ -410,7 +429,7 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
                 {mostrarMessageBar && (
                     <>
                     <MessageBar messageBarType={MessageBarType.error}  isMultiline={false} >
-                      Ya existe un registro con ese Tipo de Documento
+                      Ya existe un registro con èste Nombre de Documento
                     </MessageBar>
                   </>
                   )}
@@ -512,21 +531,54 @@ const FormAbmTipoDocumentos: React.FC<IFormAbmTipoDocumentosProps> = (props: IFo
                   )}
                 </Stack>
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 10 }} styles={{ root: { paddingTop: 10 } }}>
-                  <Label>Prefijo: </Label>
-                  <TextField
-                    placeholder='Prefijo'
-                    value={prefijo}
-                    onChange={_PrefijoCambia}
-                    styles={getStyles}
-                  />
-               
-                <Label>Versión inicial: </Label>
-                  <TextField
-                    placeholder='Versión inicial'
-                    value={versionInicial}
-                    onChange={_VersionInicialCambia}
-                    styles={getStyles}
-                  />
+                  <Stack verticalAlign="start" className={styles.customStack}>
+                    <Label>Prefijo: </Label>
+                    <TextField
+                      placeholder='Prefijo'
+                      value={prefijo}
+                      onChange={_PrefijoCambia}
+                      styles={getStyles}
+                    />
+                  </Stack>
+                  <Stack verticalAlign="start" className={styles.customStack}>
+                    <Label>Versión inicial: </Label>
+                    <TextField
+                      placeholder='Versión inicial'
+                      value={versionInicial}
+                      onChange={_VersionInicialCambia}
+                      styles={getStyles}
+                    />
+                  </Stack>
+                  <Stack verticalAlign="start" className={styles.customStackAprob}>
+                    <Label>Tipo de documento: </Label>
+                    <Dropdown
+                      placeholder="Seleccione..."
+                      options={TipoDoc}
+                      selectedKey={ddTipoDoc ? ddTipoDoc.key : undefined}
+                      onChange={cambiaTipoDoc}
+                      className={styles.combos}
+                    />
+                  </Stack>
+                </Stack>
+                <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 10 }} styles={{ root: { paddingTop: 10 } }}>
+                  <Stack verticalAlign="start" className={styles.customStack}>
+                    <Label>Biblioteca documento: </Label>
+                    <TextField
+                      placeholder='Biblioteca documento'
+                      value={biblioteca}
+                      onChange={_BibliotecaCambia}
+                      styles={getStyles}
+                    />
+                  </Stack>
+                  <Stack verticalAlign="start" className={styles.customStackAprob}>
+                    <Toggle 
+                    label="Estado: "
+                    checked={estadoActivo}
+                    onText="ACTIVO"
+                    offText="NO ACTIVO"
+                    onChange={_onChangeEstado}
+                    />
+                  </Stack>
                 </Stack>
                 <Stack styles={{ root: { paddingTop: 10 } }}>
                   <PrimaryButton 
