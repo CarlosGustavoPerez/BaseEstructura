@@ -19,6 +19,7 @@ const GrillaComponente: React.FC<IGrillaComponenteProps> = (props) => {
   
   const camposSelectMonitoreos: string =[
     'ID',
+    'Title',	
     'Created',
     'Usuario/EMail', 
     'Usuario/Title', 
@@ -73,6 +74,13 @@ const GrillaComponente: React.FC<IGrillaComponenteProps> = (props) => {
       displayName: 'ID',
       minWidth: 50,
       maxWidth: 100,
+      isResizable: true,
+    },
+    {
+      name: 'Title',
+      displayName: 'Título',
+      minWidth: 100,
+      maxWidth: 150,
       isResizable: true,
     },
     {

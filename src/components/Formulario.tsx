@@ -4,11 +4,12 @@ import styles from '../webparts/baseEstructura/components/BaseEstructura.module.
 import dropdownlisthelper from "../services/dropdownlist.helper";
 import { ICamposListaOpciones } from '../interfaces/ICamposListaOpciones';
 import { ICamposLista } from '../interfaces/IData';
+import { validaciones } from '../common/validationUtils';
 import SPODataProvider from '../config/SharePointDataProvider';
 import userServices from "../services/user.services";
 import { IFormularioMonitoreoProps} from '../interfaces/IFormularioMonitoreoProps';
 import { 
-        PrimaryButton, IconButton,
+        PrimaryButton, TextField,
         Stack, IStackTokens,
         Separator,
         Label,
@@ -43,6 +44,7 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState([]);
   const [usuarioSeleccionadoId, setUsuarioSeleccionadoId] = useState([]);
   const [perteneceGrupo, setPerteneceGrupo] = useState(false);
+  const [titulo, setTitulo] = useState('');
 
   useEffect(() => {
     usuarioLogueado();
@@ -118,6 +120,7 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
         camposExpandBaseEstructura
       );
       let FechaHoraCreacion = new Date(item.Created.toString());
+      setTitulo(item.Title);
       setDdOpciones({ key: item.Combo, text: item.Combo });
       setUsuarioSeleccionado([item.Usuario.Title]);
       setUsuarioSeleccionadoId([item.Usuario.Id]);
@@ -159,10 +162,39 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
   const handleSave = async () => {
     try {
       const formData = {
-        Title: "Base estructura",
+        Title: titulo,
         Combo: ddOpciones?.text || "",
         UsuarioId: usuarioSeleccionadoId[0],
       };
+      const errors = validaciones.validarDatosForm({
+        titulo,
+        ddOpciones,
+        usuarioSeleccionadoId,
+        adjuntarArchivos,
+      });
+  
+      if (Object.keys(errors).length > 0) {
+        // Construir el mensaje de error con los campos vacíos
+        const camposFaltantes = Object.keys(errors)
+          .map((campo) => {
+            switch (campo) {
+              case 'titulo':
+                return 'Título';
+              case 'ddOpciones':
+                return 'Opción seleccionada';
+              case 'usuarioSeleccionadoId':
+                return 'Usuario seleccionado';
+              case 'adjuntarArchivos':
+                return 'Archivo adjunto';
+              default:
+                return campo;
+            }
+          })
+          .join(', ');
+  
+        setMensajeError(`Por favor complete los siguientes campos: ${camposFaltantes}.`);
+        return;
+      }
       let itemId;
       if (props.id && props.id !== 0) {
         await SPODataProvider.update(props.lista, props.id, formData);
@@ -219,15 +251,20 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
         <div className={styles.header}></div>
         <div className={styles.separator}></div>
         <div className={styles.DivForm}>
-          {perteneceGrupo && props.id != 0 &&(<Stack tokens={stackTokensEstado} horizontal horizontalAlign="end">
-            <IconButton onClick={() =>copiarAlPortapapeles(props.id)} iconProps={{ iconName: 'ContactLink' }} title="Copiar vinculo monitoreo" ariaLabel="Copiar vinculo monitoreo" />
-          </Stack>)}
-          {/* Primera fila encabezado */}
+          
           <Stack tokens={stackTokensEstado} horizontal>
-            <Stack.Item styles={{ root: { width: '40%' } }}>
-              <Label>Seleccione campaña: </Label>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
+              <Label>Título:</Label>
+              <TextField
+                placeholder="Ingrese el título"
+                value={titulo}
+                onChange={(e, newValue) => setTitulo(newValue || '')}
+              />
+            </Stack.Item>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
+              <Label>Seleccione opcion: </Label>
               <Dropdown
-                placeholder="Seleccione campaña"
+                placeholder="Seleccione opcion"
                 options={Opciones}
                 selectedKey={ddOpciones ? ddOpciones.key : undefined}
                 onChange={onChangeOpciones}
@@ -236,12 +273,14 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
                 disabled={!perteneceGrupo}
               />
             </Stack.Item>
-            <Stack.Item styles={{ root: { width: '20%' } }}>
-              <Label>Fecha y hora monitoreo: </Label>
+          </Stack>
+          <Stack tokens={stackTokensEstado} horizontal>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
+              <Label>Fecha y hora de creacion: </Label>
               <Label>{fechaHoraCreacion}</Label>
             </Stack.Item>
             {perteneceGrupo && (
-            <Stack.Item styles={{ root: { width: '40%' } }}>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
               <Label>Realizado por:</Label>
               <Persona onRenderPrimaryText={() => (<h1>{usuarioNombreCompleto}</h1>)} size={PersonaSize.size32} showInitialsUntilImageLoads imageShouldStartVisible
                       imageUrl={`/_layouts/15/userphoto.aspx?username=${usuarioEmail}&size=${PersonaSize.size32}`} styles={{ primaryText: { color: '#03787c', fontSize: '10px', }, }} />
@@ -249,41 +288,47 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
             )}
           </Stack>
           <Separator styles={stylesSeparador}></Separator>
-          <FilePicker
-            accepts={[".pdf", ".docx", ".xlsx"]}
-            buttonIcon={"FileTypeIcon}"}
-            buttonLabel='Seleccione archivo(s)'
-            onSave={onFilePickerSave}
-            onChange={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult); }}
-            context={props.context as any}
-            hideLocalMultipleUploadTab={false}
-          />
-          {selFiles.length > 0 && (
-            <div className={styles.filePicker}>
-              <Label>Archivos seleccionados:</Label>
-              {selFiles.map((file, index) => (
-                <div key={index} className={styles.filePickerItem}>
-                  <FileTypeIcon type={file.Name} size={ImageSize.medium} />
-                  <a href={file.Url} target="_blank" rel="noopener noreferrer">
-                    {file.Name}
-                  </a>
+          <Stack tokens={stackTokensEstado} horizontal>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
+              <FilePicker
+                accepts={[".pdf", ".docx", ".xlsx"]}
+                buttonIcon={"FileTypeIcon}"}
+                buttonLabel='Seleccione archivo(s)'
+                onSave={onFilePickerSave}
+                onChange={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult); }}
+                context={props.context as any}
+                hideLocalMultipleUploadTab={false}
+              />
+              {selFiles.length > 0 && (
+                <div className={styles.filePicker}>
+                  <Label>Archivos seleccionados:</Label>
+                  {selFiles.map((file, index) => (
+                    <div key={index} className={styles.filePickerItem}>
+                      <FileTypeIcon type={file.Name} size={ImageSize.medium} />
+                      <a href={file.Url} target="_blank" rel="noopener noreferrer">
+                        {file.Name}
+                      </a>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-          <Label>Seleccione usuario: </Label>
-          <PeoplePicker
-            placeholder='Seleccione usuario'
-            personSelectionLimit={1}
-            context={props.context}
-            showtooltip={true}
-            ensureUser={true}
-            onChange={_UsuarioSeleccionadoChanged}
-            principalTypes={[PrincipalType.User]}
-            defaultSelectedUsers={usuarioSeleccionado}
-            peoplePickerCntrlclassName={styles.peoplePickerdBackgroundColor}
-            resolveDelay={1000} 
-          />
+              )}
+            </Stack.Item>
+            <Stack.Item styles={{ root: { width: '50%' } }}>
+              <Label>Seleccione usuario: </Label>
+              <PeoplePicker
+                placeholder='Seleccione usuario'
+                personSelectionLimit={1}
+                context={props.context}
+                showtooltip={true}
+                ensureUser={true}
+                onChange={_UsuarioSeleccionadoChanged}
+                principalTypes={[PrincipalType.User]}
+                defaultSelectedUsers={usuarioSeleccionado}
+                peoplePickerCntrlclassName={styles.peoplePickerdBackgroundColor}
+                resolveDelay={1000} 
+              />
+            </Stack.Item>
+          </Stack>
           <Separator styles={stylesSeparador}></Separator>
           <PrimaryButton 
             styles={{

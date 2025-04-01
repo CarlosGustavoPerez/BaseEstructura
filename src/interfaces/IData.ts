@@ -12,5 +12,6 @@ export interface ICamposLista {
     Id: number;
   };
   Combo: string;
+  Title: string;
 }
   
