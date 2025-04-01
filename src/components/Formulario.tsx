@@ -236,15 +236,6 @@ const FormularioMonitoreo: React.FC<IFormularioMonitoreoProps > = (props: IFormu
       setAdjuntarArchivos(filesToUpload);
     }
   };
-  const textoACopiar = window.location+'?IdSolicitud=';
-  const copiarAlPortapapeles = async (id)  => {
-    const textArea = document.createElement('textarea');
-    textArea.value = textoACopiar+id;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-  };
  
   return(
     <section className={styles.section}>
