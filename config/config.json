@@ -2,18 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "abm-tipo-documentos-web-part": {
+    "baseestructura-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/abmTipoDocumentos/AbmTipoDocumentosWebPart.js",
-          "manifest": "./src/webparts/abmTipoDocumentos/AbmTipoDocumentosWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/BaseEstructura/BaseEstructuraWebPart.js",
+          "manifest": "./src/webparts/BaseEstructura/BaseEstructuraWebPart.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "AbmTipoDocumentosWebPartStrings": "lib/webparts/abmTipoDocumentos/loc/{locale}.js",
+    "BaseEstructuraWebPartStrings": "lib/webparts/BaseEstructura/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
 }

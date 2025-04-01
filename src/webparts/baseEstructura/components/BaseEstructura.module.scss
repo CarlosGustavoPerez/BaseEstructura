@@ -1,0 +1,74 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+:global {
+  #workbenchPageContent, .CanvasComponent.LCS .CanvasZone {
+    max-width: 100% !important;
+  }
+}
+:root{
+  --grisFondo: #dfddd8;
+  --azulNacion:#03787c;
+}
+.BaseEstructura {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+.section{
+  max-width: 890px;
+  margin: auto;
+}
+.header{
+  background-image: url('./img/Banner.png');
+  background-size: cover;
+  
+  height: 147px;
+  padding: 1em;
+}
+.separator {
+  height: 5px;
+  width: 100%;
+  background-color: var(--azulNacion); /* Color azul */
+}
+.DivForm{
+  background-color: var(--grisFondo);
+  padding: 1em;
+  
+}
+.combos{
+  width: 100%;
+}
+.combos>div>span{
+  
+  padding-top: 0px;
+}
+.archivoAdjunto{
+  text-decoration: none;
+  color: #000;
+}
+.archivoAdjunto:hover {
+  color: #666;
+}
+
+.archivoAdjunto:visited {
+  color: #666;
+}
+
+.archivoAdjunto:active {
+  color: #000;
+}
+.peoplePickerdBackgroundColor {
+  background-color: #ffffff !important;
+}
+.filePicker {
+  margin-top: 10px;
+}
+
+.filePickerItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}

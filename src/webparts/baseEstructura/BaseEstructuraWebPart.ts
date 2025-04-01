@@ -8,25 +8,33 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'AbmTipoDocumentosWebPartStrings';
-import AbmTipoDocumentos from './components/MasterAbmTipoDocumentos';
-import { IAbmTipoDocumentosProps } from './components/AbmTipoDocumentosProps';
+import * as strings from 'BaseEstructuraWebPartStrings';
+import BaseEstructura from './components/MasterBaseEstructura';
+import { IBaseEstructuraProps } from './components/IBaseEstructuraProps';
 import { sp } from "@pnp/sp/presets/all";
 
-export interface IAbmTipoDocumentosWebPartProps {
+export interface IBaseEstructuraWebPartProps {
   description: string;
 }
 
-export default class AbmTipoDocumentosWebPart extends BaseClientSideWebPart<IAbmTipoDocumentosWebPartProps> {
+export default class BaseEstructuraWebPart extends BaseClientSideWebPart<IBaseEstructuraWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IAbmTipoDocumentosProps> = React.createElement(
-      AbmTipoDocumentos,
+    const siteUrl = this.context.pageContext.site.absoluteUrl;
+    
+    const listaNombre = {
+      listaBaseEstructura: 'BaseEstructura',
+      listaBaseEstructuraAux: 'BaseEstructuraAux',
+    };
+    const element: React.ReactElement<IBaseEstructuraProps> = React.createElement(
+      BaseEstructura,
       {
+        siteUrl: siteUrl,
         context:this.context,
+        listaNombre: listaNombre
       }
     );
 

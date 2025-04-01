@@ -1,4 +1,4 @@
-declare interface IAbmTipoDocumentosWebPartStrings {
+declare interface IBaseEstructuraWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -8,7 +8,7 @@ declare interface IAbmTipoDocumentosWebPartStrings {
   AppTeamsTabEnvironment: string;
 }
 
-declare module 'AbmTipoDocumentosWebPartStrings' {
-  const strings: IAbmTipoDocumentosWebPartStrings;
+declare module 'BaseEstructuraWebPartStrings' {
+  const strings: IBaseEstructuraWebPartStrings;
   export = strings;
 }
